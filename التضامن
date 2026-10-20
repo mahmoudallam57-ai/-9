@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>التضامن العربي - الصف التاسع</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'Tajawal', Arial, sans-serif;
+    background: #f5f0e8;
+    color: #1a1a2e;
+    direction: rtl;
+    min-height: 100vh;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #1a472a 0%, #2d6a4f 50%, #1a472a 100%);
+    color: white;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '☽';
+    position: absolute;
+    font-size: 120px;
+    opacity: 0.05;
+    top: -10px;
+    left: 20px;
+  }
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 0.4rem;
+  }
+  .hero p {
+    font-size: 1rem;
+    opacity: 0.85;
+    margin-bottom: 1rem;
+  }
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    height: 8px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    background: #a8d5a2;
+    transition: width 0.5s ease;
+  }
+  .progress-label {
+    font-size: 0.82rem;
+    margin-top: 0.4rem;
+    opacity: 0.8;
+  }
+
+  .main { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1a472a;
+    border-right: 4px solid #2d6a4f;
+    padding-right: 12px;
+    margin: 2rem 0 1rem;
+  }
+
+  .question-card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e0ddd5;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.2s;
+  }
+  .question-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .q-num {
+    background: #2d6a4f;
+    color: white;
+    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .q-text {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+    color: #1a1a2e;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn {
+    background: #f8f6f1;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    padding: 0.65rem 1rem;
+    text-align: right;
+    font-family: 'Tajawal', Arial, sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    color: #1a1a2e;
+  }
+  .option-btn:hover:not(:disabled) {
+    background: #e8f5e9;
+    border-color: #2d6a4f;
+  }
+  .option-btn.selected { border-color: #2d6a4f; background: #e8f5e9; }
+  .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; font-weight: 700; }
+  .option-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+  .option-btn.reveal-correct { background: #d4edda; border-color: #28a745; color: #155724; }
+  .option-btn:disabled { cursor: not-allowed; }
+
+  .check-btn {
+    margin-top: 0.75rem;
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 1.4rem;
+    font-family: 'Tajawal', Arial, sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .check-btn:hover { background: #1a472a; }
+  .check-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+  .feedback {
+    margin-top: 0.75rem;
+    padding: 0.65rem 1rem;
+    border-radius: 9px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .feedback.partial { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+  .feedback.ai-checking { background: #e8f4fd; color: #0c5460; border: 1px solid #bee5eb; }
+
+  .open-textarea {
+    width: 100%;
+    min-height: 90px;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-family: 'Tajawal', Arial, sans-serif;
+    font-size: 0.95rem;
+    direction: rtl;
+    resize: vertical;
+    transition: border-color 0.2s;
+    color: #1a1a2e;
+    background: #fafafa;
+    margin-bottom: 0.5rem;
+  }
+  .open-textarea:focus { outline: none; border-color: #2d6a4f; background: white; }
+  .open-textarea:disabled { background: #f0f0f0; color: #555; }
+
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #e8f4fd;
+    color: #0c5460;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .ai-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #17a2b8;
+    animation: pulse 1.2s infinite;
+    display: none;
+  }
+  .ai-dot.active { display: inline-block; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  .score-bar {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e0ddd5;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    text-align: center;
+  }
+  .score-big { font-size: 2.5rem; font-weight: 700; color: #2d6a4f; }
+  .score-label { font-size: 0.9rem; color: #666; margin-bottom: 0.5rem; }
+
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid #ccc;
+    border-top-color: #17a2b8;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-left: 5px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .publish-note {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.87rem;
+    color: #856404;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>التضامن العربي</h1>
+  <p>الدراسات الاجتماعية — الصف التاسع</p>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 من 20 سؤالاً</div>
+</div>
+
+<div class="main">
+
+  <div class="publish-note">
+    💡 لنشر هذا الموقع: اضغط على زر <strong>Share</strong> أو <strong>Publish</strong> في شريط الأدوات أعلاه لمشاركة الرابط مع الطلاب.
+  </div>
+
+  <div class="section-title">أولاً: أسئلة الاختيار من متعدد (15 سؤالاً)</div>
+
+  <div id="mcqContainer"></div>
+
+  <div class="section-title">ثانياً: الأسئلة المقالية (5 أسئلة — يتم التصحيح بالذكاء الاصطناعي)</div>
+
+  <div id="openContainer"></div>
+
+  <div class="score-bar" id="scoreBar" style="display:none">
+    <div class="score-label">نتيجتك في أسئلة الاختيار من متعدد</div>
+    <div class="score-big" id="scoreNum">0/15</div>
+    <div class="score-label" id="scorePct"></div>
+  </div>
+
+</div>
+
+<script>
+const MCQ = [
+  { q: "ما المقصود بالتضامن العربي؟", opts: ["التعاون والتكاتف بين الدول العربية لتحقيق المصالح المشتركة","الاتحاد السياسي الكامل بين الدول العربية","الوحدة العسكرية بين الجيوش العربية","إنشاء عملة عربية موحدة"], ans: 0 },
+  { q: "في أي عام تأسست جامعة الدول العربية؟", opts: ["1945","1948","1952","1960"], ans: 0 },
+  { q: "أين تقع مقر جامعة الدول العربية؟", opts: ["عمّان","بغداد","القاهرة","الرياض"], ans: 2 },
+  { q: "كم عدد الدول الأعضاء في جامعة الدول العربية؟", opts: ["18","22","20","25"], ans: 1 },
+  { q: "ما الهدف الرئيسي من إنشاء جامعة الدول العربية؟", opts: ["فرض سيطرة دولة على أخرى","تعزيز التعاون وتحقيق الوحدة بين الدول العربية","إنشاء جيش عربي موحد","تطوير الصناعة النفطية فقط"], ans: 1 },
+  { q: "ما الرابط الأساسي الذي يجمع الدول العربية؟", opts: ["الدين الإسلامي فقط","اللغة العربية والتاريخ والثقافة المشتركة","الموقع الجغرافي المتقارب فقط","الاتفاقيات الاقتصادية"], ans: 1 },
+  { q: "ما الذي تمثله منظمة التعاون الإسلامي بالنسبة للدول العربية؟", opts: ["منافسة لجامعة الدول العربية","إطار تعاون أوسع يشمل الدول الإسلامية غير العربية","منظمة اقتصادية بحتة","تحالف عسكري"], ans: 1 },
+  { q: "أي من التالي يُعدّ مثالاً على التضامن العربي الاقتصادي؟", opts: ["منظمة أوبك+","منطقة التجارة الحرة العربية الكبرى","الاتحاد الأوروبي","منظمة التجارة العالمية"], ans: 1 },
+  { q: "ما دور اللغة العربية في تعزيز التضامن العربي؟", opts: ["تحديد الحدود الجغرافية","توحيد الهوية الثقافية والتواصل بين الشعوب العربية","السيطرة على التجارة الإقليمية","لا دور لها"], ans: 1 },
+  { q: "ما التحدي الذي يواجه التضامن العربي في الوقت الراهن؟", opts: ["كثرة الموارد الطبيعية","الخلافات السياسية والنزاعات الداخلية","قلة السكان","غياب الثقافة المشتركة"], ans: 1 },
+  { q: "أي منظمة أُسست لتعزيز التعاون العربي في مجال التعليم والثقافة والعلوم؟", opts: ["الأليكسو (ALECSO)","اليونسكو","الأسيسكو فقط","منظمة العمل الدولية"], ans: 0 },
+  { q: "ما مفهوم 'القومية العربية'؟", opts: ["الانتماء إلى قبيلة عربية معينة","الشعور بالانتماء الجماعي للأمة العربية والرغبة في توحيدها","رفض التعاون مع الدول غير العربية","ممارسة الطقوس الدينية العربية"], ans: 1 },
+  { q: "ما الذي يميز منطقة الشرق الأوسط وشمال أفريقيا كإطار للتضامن العربي؟", opts: ["أنها منطقة ذات كثافة سكانية منخفضة","تجمع أغلب الدول العربية وتتشارك في المصالح والموارد الاستراتيجية","أنها منطقة بلا نزاعات","اقتصارها على الدول النفطية"], ans: 1 },
+  { q: "أي من التالي يُعدّ نتيجة إيجابية للتضامن العربي؟", opts: ["تصاعد النزاعات الحدودية","تعزيز القدرة التفاوضية على الساحة الدولية","تراجع التبادل التجاري","انعزال الدول العربية عن بعضها"], ans: 1 },
+  { q: "متى كانت حقبة ازدهار الوحدة العربية بقيادة جمال عبد الناصر؟", opts: ["الأربعينيات","الستينيات","السبعينيات","الثمانينيات"], ans: 1 },
+];
+
+const OPEN = [
+  { q: "اشرح كيف يُسهم التضامن العربي في تعزيز الأمن الإقليمي في منطقة الشرق الأوسط. استشهد بمثال واحد على الأقل.", rubric: "التضامن العربي يعزز الأمن عبر التنسيق، التحالفات الدفاعية المشتركة، ومنع التدخل الأجنبي. أمثلة: قوات درع الجزيرة، جامعة الدول العربية كوسيط." },
+  { q: "ناقش التحديات الرئيسية التي تواجه التضامن العربي في القرن الواحد والعشرين.", rubric: "التحديات: الخلافات السياسية، الطائفية، التدخل الأجنبي، عدم المساواة الاقتصادية، الأنظمة المختلفة، النزاعات الداخلية." },
+  { q: "قارن بين دور جامعة الدول العربية ودور الاتحاد الأوروبي في تحقيق التكامل بين الدول الأعضاء.", rubric: "الاتحاد الأوروبي أكثر تكاملاً (عملة، برلمان، حرية تنقل). الجامعة العربية استشارية أضعف بكثير. أوجه الشبه: الحوار، التعاون الاقتصادي." },
+  { q: "كيف يُعزز التراث الثقافي والحضاري المشترك الهوية العربية؟ اذكر ثلاثة عناصر ثقافية مشتركة.", rubric: "عناصر: اللغة العربية، الدين الإسلامي، الأدب والشعر، الموسيقى والفنون، التاريخ المشترك (الخلافة، الحضارة الإسلامية)." },
+  { q: "في رأيك، ما أهمية التضامن العربي للدول العربية الصغيرة كالإمارات والكويت؟ برّر إجابتك.", rubric: "الدول الصغيرة تستفيد من: القوة التفاوضية الجماعية، الحماية الأمنية، الفرص الاقتصادية، الثقل الدبلوماسي، التبادل التجاري." },
+];
+
+let answered = { mcq: new Array(15).fill(false), open: new Array(5).fill(false) };
+let scores = 0;
+
+function updateProgress() {
+  const done = answered.mcq.filter(Boolean).length + answered.open.filter(Boolean).length;
+  const pct = Math.round((done / 20) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = done + ' من 20 سؤالاً';
+  const mcqDone = answered.mcq.filter(Boolean).length;
+  if (mcqDone > 0) {
+    document.getElementById('scoreBar').style.display = 'block';
+    document.getElementById('scoreNum').textContent = scores + '/15';
+    const pctScore = Math.round((scores/15)*100);
+    document.getElementById('scorePct').textContent = pctScore + '% — ' + (pctScore>=90?'ممتاز 🌟':pctScore>=75?'جيد جداً ✅':pctScore>=60?'جيد 👍':'يحتاج مراجعة 📚');
+  }
+}
+
+function buildMCQ() {
+  const c = document.getElementById('mcqContainer');
+  MCQ.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'mcq-' + i;
+    card.innerHTML = `
+      <div class="q-header">
+        <div class="q-num">${i+1}</div>
+        <div class="q-text">${q.q}</div>
+      </div>
+      <div class="options">
+        ${q.opts.map((o,j) => `<button class="option-btn" data-q="${i}" data-opt="${j}" onclick="selectOpt(${i},${j})">${o}</button>`).join('')}
+      </div>
+      <button class="check-btn" id="chk-${i}" onclick="checkMCQ(${i})" disabled>تحقق من الإجابة</button>
+      <div class="feedback" id="fb-${i}"></div>
+    `;
+    c.appendChild(card);
+  });
+}
+
+function selectOpt(qi, oi) {
+  if (answered.mcq[qi]) return;
+  document.querySelectorAll(`[data-q="${qi}"]`).forEach(b => b.classList.remove('selected'));
+  document.querySelector(`[data-q="${qi}"][data-opt="${oi}"]`).classList.add('selected');
+  document.getElementById('chk-' + qi).disabled = false;
+}
+
+function checkMCQ(qi) {
+  if (answered.mcq[qi]) return;
+  const selected = document.querySelector(`[data-q="${qi}"].selected`);
+  if (!selected) return;
+  const chosen = parseInt(selected.dataset.opt);
+  const correct = MCQ[qi].ans;
+  answered.mcq[qi] = true;
+  document.querySelectorAll(`[data-q="${qi}"]`).forEach(b => b.disabled = true);
+  document.getElementById('chk-' + qi).disabled = true;
+  const fb = document.getElementById('fb-' + qi);
+  if (chosen === correct) {
+    selected.classList.add('correct');
+    fb.className = 'feedback correct show';
+    fb.innerHTML = '✅ إجابة صحيحة! أحسنت.';
+    scores++;
+  } else {
+    selected.classList.add('wrong');
+    document.querySelector(`[data-q="${qi}"][data-opt="${correct}"]`).classList.add('reveal-correct');
+    fb.className = 'feedback wrong show';
+    fb.innerHTML = `❌ إجابة خاطئة. الإجابة الصحيحة: <strong>${MCQ[qi].opts[correct]}</strong>`;
+  }
+  updateProgress();
+}
+
+function buildOpen() {
+  const c = document.getElementById('openContainer');
+  OPEN.forEach((q, i) => {
+    const num = 16 + i;
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.innerHTML = `
+      <div class="q-header">
+        <div class="q-num">${num}</div>
+        <div class="q-text">${q.q}</div>
+      </div>
+      <div class="ai-badge"><span class="ai-dot" id="dot-${i}"></span>تصحيح بالذكاء الاصطناعي</div>
+      <textarea class="open-textarea" id="ota-${i}" placeholder="اكتب إجابتك هنا..."></textarea>
+      <button class="check-btn" id="ochk-${i}" onclick="checkOpen(${i})">تقييم إجابتي</button>
+      <div class="feedback" id="ofb-${i}"></div>
+    `;
+    c.appendChild(card);
+  });
+}
+
+async function checkOpen(i) {
+  if (answered.open[i]) return;
+  const ta = document.getElementById('ota-' + i);
+  const answer = ta.value.trim();
+  if (answer.length < 15) {
+    const fb = document.getElementById('ofb-' + i);
+    fb.className = 'feedback wrong show';
+    fb.innerHTML = '⚠️ يرجى كتابة إجابة أكثر تفصيلاً.';
+    return;
+  }
+  const btn = document.getElementById('ochk-' + i);
+  const dot = document.getElementById('dot-' + i);
+  const fb = document.getElementById('ofb-' + i);
+  btn.disabled = true;
+  btn.innerHTML = 'جارٍ التقييم... <span class="spinner"></span>';
+  dot.classList.add('active');
+  fb.className = 'feedback ai-checking show';
+  fb.innerHTML = '🤖 يقوم الذكاء الاصطناعي بتحليل إجابتك...';
+
+  const prompt = `أنت مُصحِّح اجتماعيات عربي خبير للصف التاسع. قيّم إجابة الطالب التالية على السؤال المقالي بشكل بنّاء.
+
+السؤال: ${OPEN[i].q}
+النقاط الرئيسية المطلوبة: ${OPEN[i].rubric}
+إجابة الطالب: ${answer}
+
+أعطِ تقييماً موجزاً باللغة العربية (3-5 جمل) يشمل:
+1. درجة الإجابة من 10
+2. ما أجاد فيه الطالب
+3. ما يحتاج إلى تحسين أو إضافة
+4. نصيحة واحدة للتطوير
+اجعل ردك مشجعاً وبنّاءً. ابدأ مباشرة بالتقييم بدون مقدمات.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || 'تعذّر الحصول على التقييم.';
+    fb.className = 'feedback partial show';
+    fb.innerHTML = '🤖 <strong>تقييم الذكاء الاصطناعي:</strong><br><br>' + text.replace(/\n/g, '<br>');
+    answered.open[i] = true;
+    ta.disabled = true;
+    btn.innerHTML = 'تم التقييم ✓';
+  } catch (e) {
+    fb.className = 'feedback wrong show';
+    fb.innerHTML = '⚠️ تعذّر الاتصال بخدمة التقييم. تحقق من الاتصال بالإنترنت وحاول مجدداً.';
+    btn.disabled = false;
+    btn.innerHTML = 'تقييم إجابتي';
+  }
+  dot.classList.remove('active');
+  updateProgress();
+}
+
+buildMCQ();
+buildOpen();
+updateProgress();
+</script>
+</body>
+</html>
